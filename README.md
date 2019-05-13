@@ -13,8 +13,6 @@ Diary of your browser History.
   - See `%appdata%\Mozilla\Firefox\Profiles`
   - Ex1. `tvsczp3y.default`
   - Ex2. `iotcz7up.stakiran`
-- (3) Get history data with CSV
-  - 
 
 ## How to use
 Firstly, output .csv file.
