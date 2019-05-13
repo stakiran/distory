@@ -35,7 +35,6 @@ And, files like this:
 
 ```
 ...
-"Sign in to GitHub · GitHub",https://github.com/login?return_to=%2Fstakiran,1557748660862000
 "stakiran (stakiran)",https://github.com/stakiran,1557748668694000
 "Create a New Repository",https://github.com/new,1557748673761000
 ```
@@ -45,7 +44,6 @@ And, files like this:
 ```
 # 2019/05/13(月) 77 counts
 ...
-- 2019/05/13(月) 20:57:40 ["Sign in to GitHub · GitHub"](https://github.com/login?return_to=%2Fstakiran)
 - 2019/05/13(月) 20:57:48 ["stakiran (stakiran)"](https://github.com/stakiran)
 - 2019/05/13(月) 20:57:53 ["Create a New Repository"](https://github.com/new)
 ```
