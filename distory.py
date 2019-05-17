@@ -119,7 +119,7 @@ for i,csv_line_with_list in enumerate(csv_lines):
 
     # Completion title of specific urls
     if len(title)==0:
-        title = 'Maybe redirect...'
+        title = '<<< Untitled >>>'
 
     md_line = '- {} [{}]({})'.format(
         dtstr_readable, title, url
