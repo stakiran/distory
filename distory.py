@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import csv
 import datetime
 import os
 import sys
@@ -9,26 +10,9 @@ def abort(msg):
     print('Error!: {0}'.format(msg))
     exit(1)
 
-def file2list(filepath):
-    ret = []
-    with open(filepath, encoding='utf8', mode='r') as f:
-        ret = [line.rstrip('\n') for line in f.readlines()]
-    return ret
-
 def list2file(filepath, ls):
     with open(filepath, encoding='utf8', mode='w') as f:
         f.writelines(['{:}\n'.format(line) for line in ls] )
-
-def file2str(filepath):
-    ret = ''
-    with open(filepath, encoding='utf8', mode='r') as f:
-        ret = f.read()
-    return ret
-
-def str2file(filepath, s):
-    with open(filepath, encoding='utf8', mode='w') as f:
-        f.write(s)
-
 
 def dtstr2dt(dtstr):
     """ @param A YYMMDD string. """
@@ -112,16 +96,24 @@ if not(args.md):
 
 target_filename = '{}.csv'.format(dtstr)
 output_filename = '{}.md'.format(dtstr)
-csv_lines = file2list(target_filename)
 
+# Create csv_lines with csv lib because easy handling of "comma in element".
+# csv_lines = [
+#     ['element1','element2',...],
+#     ['element1','element2',...],
+#     ...
+# ]
+csv_lines = []
+with open(target_filename, encoding='utf8', mode='r') as f:
+    for row in csv.reader(f):
+        csv_lines.append(row)
+
+# Convert csv_lines to md_lines.
 md_lines = []
-for i,csv_line in enumerate(csv_lines):
+for i,csv_line_with_list in enumerate(csv_lines):
     historycount = i+1
 
-    # Normalization to avoid "comma in field"
-    csv_line = csv_line.replace(', ', ' / ')
-
-    title, url, unixtime_micro_str = csv_line.split(',', 2)
+    title, url, unixtime_micro_str = csv_line_with_list
     dt = unixtime_micro_str2dt(unixtime_micro_str)
     dtstr_readable = dt2japanese_readable(dt)
 
@@ -129,12 +121,12 @@ for i,csv_line in enumerate(csv_lines):
     if len(title)==0:
         title = 'Maybe redirect...'
 
-
     md_line = '- {} [{}]({})'.format(
         dtstr_readable, title, url
     )
 
     md_lines.append(md_line)
+
 caption = dt2japanese_readable_without_time(dtstr2dt(dtstr))
 md_lines.insert(0, '# {} {} counts'.format(caption, historycount))
 list2file(output_filename, md_lines)
