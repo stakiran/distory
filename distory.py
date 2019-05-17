@@ -65,9 +65,17 @@ def parse_arguments():
     parser.add_argument('--md', default=False, action='store_true',
         help='If given, convert (DATE).csv to (DATE).md.')
 
+    parser.add_argument('--bookmark', default=False, action='store_true',
+        help='If given, export bookmark with dateAdded based instead of history with last_visit_date based.')
+
+    parser.add_argument('--debug', default=False, action='store_true',
+        help='If given, show the commandline only. This option is invalid in no --md.')
+
     args = parser.parse_args()
     return args
 
+COMMANDLINE_EXPORT_HISTORY = 'sqlite3 -readonly -csv "%appdata%\\Mozilla\\Firefox\\Profiles\\{profile_name}\\places.sqlite" "SELECT title,url,last_visit_date FROM moz_places WHERE last_visit_date BETWEEN {range_start} AND {range_end};" > {target_datestr}.csv'
+COMMANDLINE_EXPORT_BOOKMARK = 'sqlite3 -readonly -csv "%appdata%\\Mozilla\\Firefox\\Profiles\\{profile_name}\\places.sqlite" "SELECT moz_bookmarks.title, moz_places.url, moz_bookmarks.dateAdded FROM moz_bookmarks INNER JOIN moz_places ON moz_bookmarks.fk = moz_places.id WHERE moz_bookmarks.dateAdded BETWEEN {range_start} AND {range_end};" > {target_datestr}_bookmark.csv'
 
 args = parse_arguments()
 
@@ -81,7 +89,10 @@ ut_start = dt2unixtime_micro(dt_start)
 ut_end = dt2unixtime_micro(dt_end)
 
 if not(args.md):
-    commandline_template = 'sqlite3 -readonly -csv "%appdata%\\Mozilla\\Firefox\\Profiles\\{profile_name}\\places.sqlite" "SELECT title,url,last_visit_date FROM moz_places WHERE last_visit_date BETWEEN {range_start} AND {range_end};" > {target_datestr}.csv'
+    commandline_template = COMMANDLINE_EXPORT_HISTORY
+    if args.bookmark:
+        commandline_template = COMMANDLINE_EXPORT_BOOKMARK
+
     commandline_params = {
         'profile_name' : profile_name,
         'range_start' : ut_start,
@@ -91,11 +102,16 @@ if not(args.md):
     commandline = commandline_template.format(**commandline_params)
 
     print(commandline)
+    if args.debug:
+        exit(0)
     returncode = os.system(commandline)
     exit(returncode)
 
 target_filename = '{}.csv'.format(dtstr)
 output_filename = '{}.md'.format(dtstr)
+if args.bookmark:
+    target_filename = '{}_bookmark.csv'.format(dtstr)
+    output_filename = '{}_bookmark.md'.format(dtstr)
 
 # Create csv_lines with csv lib because easy handling of "comma in element".
 # csv_lines = [
@@ -110,6 +126,7 @@ with open(target_filename, encoding='utf8', mode='r') as f:
 
 # Convert csv_lines to md_lines.
 md_lines = []
+historycount = 0
 for i,csv_line_with_list in enumerate(csv_lines):
     historycount = i+1
 
