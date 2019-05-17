@@ -46,6 +46,15 @@ And, files like this:
 - 2019/05/13(月) 20:57:53 ["Create a New Repository"](https://github.com/new)
 ```
 
+## How to use about bookmark data with date added
+Use `--bookmark` option.
+
+```
+$ python distory.py --bookmark -p iotcz7up.stakiran -d 190513
+
+$ python distory.py --bookmark -p iotcz7up.stakiran -d 190513 --md
+```
+
 ## License
 [MIT License](LICENSE)
 
