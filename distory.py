@@ -65,6 +65,9 @@ def parse_arguments():
     parser.add_argument('--md', default=False, action='store_true',
         help='If given, convert (DATE).csv to (DATE).md.')
 
+    parser.add_argument('--ignore-untitled', default=False, action='store_true',
+        help='If given, ignore untitled urls.')
+
     parser.add_argument('--bookmark', default=False, action='store_true',
         help='If given, export bookmark with dateAdded based instead of history with last_visit_date based.')
 
@@ -128,14 +131,14 @@ with open(target_filename, encoding='utf8', mode='r') as f:
 md_lines = []
 historycount = 0
 for i,csv_line_with_list in enumerate(csv_lines):
-    historycount = i+1
-
     title, url, unixtime_micro_str = csv_line_with_list
     dt = unixtime_micro_str2dt(unixtime_micro_str)
     dtstr_readable = dt2japanese_readable(dt)
 
-    # Completion title of specific urls
+    # Completion title of specific urls, but in ignore-option, do skip.
     if len(title)==0:
+        if args.ignore_untitled:
+            continue
         title = '<<< Untitled >>>'
 
     md_line = '- {} [{}]({})'.format(
@@ -143,6 +146,7 @@ for i,csv_line_with_list in enumerate(csv_lines):
     )
 
     md_lines.append(md_line)
+    historycount += 1
 
 caption = dt2japanese_readable_without_time(dtstr2dt(dtstr))
 md_lines.insert(0, '# {} {} counts'.format(caption, historycount))

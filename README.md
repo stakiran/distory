@@ -55,6 +55,9 @@ $ python distory.py --bookmark -p iotcz7up.stakiran -d 190513
 $ python distory.py --bookmark -p iotcz7up.stakiran -d 190513 --md
 ```
 
+## How to ignore untitled bookmarks
+Use `--ignore-untitled` option.
+
 ## License
 [MIT License](LICENSE)
 
